@@ -37,6 +37,7 @@ public class Main {
         System.out.println("История:");
         System.out.println(taskManager.getStory());
     }
+
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Задачи:");
         for (Task task : manager.getAllTasks()) {
