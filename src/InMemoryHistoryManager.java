@@ -61,6 +61,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             inMemoryHistory.remove(node);
         }
     }
+
     private void getTasks() {
         if (!inMemoryHistory.isEmpty()) {
             history = new ArrayList<>();
