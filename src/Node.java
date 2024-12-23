@@ -1,40 +1,38 @@
-public class Node <T> {
+public class Node {
 
-    public T data;
-    public Node<T> next;
-    public Node<T> prev;
+    public Task data;
+    public Integer next;
+    public Integer prev;
 
-    public Node(T data) {
+    public Node(Task data) {
         this.data = data;
-        this.next = null;
-        this.prev = null;
+        this.next = -1;
+        this.prev = -1;
     }
 
 
 
-    public Node<T> getNext() {
+    public Integer getNext() {
         return next;
     }
 
-    public void setNext(Node<T> next) {
+    public void setNext(Integer next) {
         this.next = next;
     }
 
-    public T getData() {
+    public Task getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(Task data) {
         this.data = data;
     }
 
-    public Node<T> getPrev() {
+    public Integer getPrev() {
         return prev;
     }
 
-    public void setPrev(Node<T> prev) {
+    public void setPrev(Integer prev) {
         this.prev = prev;
     }
-
-
 }
