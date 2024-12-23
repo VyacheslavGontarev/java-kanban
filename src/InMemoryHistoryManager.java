@@ -35,7 +35,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void linkLast(Task task) {
         Node node = new Node(task);
-        if (head < 0){
+        if (head < 0) {
             head = task.getId();
         }
         if (inMemoryHistory.containsKey(tail)) {
@@ -48,12 +48,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void removeNode(Node node) {
         if (inMemoryHistory.containsValue(node)) {
-            if (node.getPrev() >= 0  && inMemoryHistory.containsKey(node.getPrev())){
+            if (node.getPrev() >= 0  && inMemoryHistory.containsKey(node.getPrev())) {
                 inMemoryHistory.get(node.getPrev()).setNext(node.getNext());
             } else {
                 head = node.getNext();
             }
-            if (node.getNext() >= 0 && inMemoryHistory.containsKey(node.getNext())){
+            if (node.getNext() >= 0 && inMemoryHistory.containsKey(node.getNext())) {
                 inMemoryHistory.get(node.getNext()).setPrev(node.getPrev());
             } else {
                 tail = node.getPrev();
