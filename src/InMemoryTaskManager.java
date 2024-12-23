@@ -139,8 +139,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void delOneTask(int id){
-        if (tasks.containsKey(id)){
+    public void delOneTask(int id) {
+        if (tasks.containsKey(id)) {
             tasks.remove(id);
             history.remove(id);
         }
@@ -174,7 +174,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getSubtasksByEpicId(int epicId){
+    public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
         ArrayList<Subtask> quests = new ArrayList<>();
         for (int i : epics.get(epicId).getSubtask()) {
             quests.add(subtasks.get(i));
@@ -196,7 +196,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         boolean allDone = true;
         boolean allNew = true;
-        for (Subtask subtask : epicSubtask){
+        for (Subtask subtask : epicSubtask) {
             if (subtask.getStatus() != Status.DONE) {
                 allDone = false;
             }
@@ -220,7 +220,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getStory(){
+    public List<Task> getStory() {
         return history.getHistory();
     }
 }
