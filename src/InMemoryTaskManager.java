@@ -41,7 +41,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> quests = new ArrayList<>();
-        for (Task task : tasks.values()){
+        for (Task task : tasks.values()) {
             quests.add(task);
             history.add(task);
         }
@@ -51,7 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Epic> getAllEpics() {
         ArrayList<Epic> quests = new ArrayList<>();
-        for (Epic epic : epics.values()){
+        for (Epic epic : epics.values()) {
             quests.add(epic);
             history.add(epic);
         }
@@ -61,7 +61,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getAllSubtasks() {
         ArrayList<Subtask> quests = new ArrayList<>();
-        for (Subtask subtask : subtasks.values()){
+        for (Subtask subtask : subtasks.values()) {
             quests.add(subtask);
             history.add(subtask);
         }
@@ -70,7 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for (Task task : tasks.values()){
+        for (Task task : tasks.values()) {
             history.remove(task.getId());
         }
         tasks.clear();
@@ -78,7 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubtasks() {
-        for (Subtask subtask : subtasks.values()){
+        for (Subtask subtask : subtasks.values()) {
             history.remove(subtask.getId());
         }
         subtasks.clear();
@@ -89,11 +89,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-        for (Subtask subtask : subtasks.values()){
+        for (Subtask subtask : subtasks.values()) {
             history.remove(subtask.getId());
         }
         subtasks.clear();
-        for (Epic epic : epics.values()){
+        for (Epic epic : epics.values()) {
             history.remove(epic.getId());
         }
         epics.clear();
