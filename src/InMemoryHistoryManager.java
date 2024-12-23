@@ -62,13 +62,15 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
     private void getTasks() {
-        history = new ArrayList<>();
-        Node node = inMemoryHistory.get(head);
-        while (node.getNext() != -1) {
-            history.add(node.getData());
-            node = inMemoryHistory.get(node.getNext());
+        if (!inMemoryHistory.isEmpty()) {
+            history = new ArrayList<>();
+            Node node = inMemoryHistory.get(head);
+            while (node.getNext() != -1) {
+                history.add(node.getData());
+                node = inMemoryHistory.get(node.getNext());
+            }
+            history.add(inMemoryHistory.get(tail).getData());
         }
-        history.add(inMemoryHistory.get(tail).getData());
     }
 }
 
