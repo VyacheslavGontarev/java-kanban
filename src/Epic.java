@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+
 public class Epic extends Task {
-    //for commit
+
     private ArrayList<Integer> subtask;
 
     public Epic(String name, String description, Status status) {
@@ -11,6 +12,7 @@ public class Epic extends Task {
     public ArrayList<Integer> getSubtask() {
         return subtask;
     }
+
     public void setSubtask(ArrayList<Integer> subtask) {
         this.subtask = subtask;
     }

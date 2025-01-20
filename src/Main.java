@@ -1,9 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
-//for commit
 
 public class Main {
-
 
     public static void main(String[] args) {
         Managers managers = new Managers();
@@ -19,30 +15,31 @@ public class Main {
         taskManager.createSubtask(subtask);
         Subtask subtask1 = new Subtask("Постучать по арбузу","Должен глухо звучать", 2, Status.NEW);
         taskManager.createSubtask(subtask1);
+        Subtask subtask2 = new Subtask("Спросить совет продавца", "Нужно чтоб сказал ДА СПЕЛЫЙ ОН", 2, Status.NEW);
+        taskManager.createSubtask(subtask2);
         Epic epic1 = new Epic("Купить молоко","Нужно свежее", Status.NEW);
         taskManager.createEpic(epic1);
-        Subtask subtask2 = new Subtask("Проверить срок годности", "Нужно не старше 3 дней", 5, Status.NEW);
-        taskManager.createSubtask(subtask2);
-        task = new Task("Сходить в магазин", "Вообще-то Магнит лучше", Status.IN_PROGRESS);
-        task.setId(0);
-        taskManager.updateTask(task);
-        subtask = new Subtask("Посмотреть цвет", "Должен быть зелёным", 2, Status.IN_PROGRESS);
-        subtask.setId(3);
-        taskManager.updateSubtask(subtask);
 
-        Task task3 = new Task("Проверочная задача 1", "Чисто проверить 1", Status.NEW);
-        taskManager.createTask(task3);
-        Task task4 = new Task("Проверочная задача 2", "Чисто проверить 2", Status.NEW);
-        taskManager.createTask(task4);
-        taskManager.delOneTask(1);
-        taskManager.delOneEpic(5);
-        printAllTasks(taskManager);
-        taskManager.deleteAllTasks();
-        System.out.println(taskManager.getAllTasks());
+        taskManager.getAllTasks();
+        taskManager.getEpicByID(2);
+        taskManager.getSubTaskByID(3);
+        System.out.println("История:");
+        System.out.println(taskManager.getStory());
+        taskManager.getEpicByID(2);
+        taskManager.getEpicByID(6);
+        System.out.println("История:");
+        System.out.println(taskManager.getStory());
+        taskManager.delOneTask(0);
+        System.out.println("История:");
+        System.out.println(taskManager.getStory());
+        taskManager.delOneEpic(2);
+        System.out.println("История:");
+        System.out.println(taskManager.getStory());
     }
+
     private static void printAllTasks(TaskManager manager) {
         System.out.println("Задачи:");
-        for (Task task : (ArrayList<Task>) manager.getAllTasks()) {
+        for (Task task : manager.getAllTasks()) {
             System.out.println(manager.getTaskByID(task.getId()));
         }
         System.out.println("Эпики:");
@@ -59,7 +56,7 @@ public class Main {
         }
 
         System.out.println("История:");
-        for (Task task : (List<Task>) manager.getStory()) {
+        for (Task task : manager.getStory()) {
             System.out.println(task);
         }
     }

@@ -1,5 +1,5 @@
 import java.util.Objects;
-//for commit
+
 public class Task {
     String name;
     String description;
@@ -12,7 +12,6 @@ public class Task {
         this.id = id;
         this.status = status;
     }
-
 
 
     @Override
