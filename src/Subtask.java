@@ -1,6 +1,5 @@
-public class Subtask extends Task{
+public class Subtask extends Task {
     int epicId;
-//for commit
 
     public Subtask(String name, String description, int epicId, Status status) {
         super(name, description, status);
