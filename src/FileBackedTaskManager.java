@@ -11,7 +11,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     public void save() {
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
-             BufferedWriter buf = new BufferedWriter(fileWriter)){
+             BufferedWriter buf = new BufferedWriter(fileWriter)) {
             buf.write("id,type,name,status,description,epic\n");
             for (Task task : getAllTasks()) {
                 buf.write(toString(task) + "\n");
