@@ -4,29 +4,47 @@ public class Task {
     String name;
     String description;
     int id;
-    Status status = Status.NEW;
+    Status status;
+    TaskTypes taskType;
 
-    public Task(String name, String description, int id) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.id = id;
+        this.status = status;
+        taskType = TaskTypes.TASK;
     }
-
-
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -34,12 +52,15 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status;
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, status);
+        return Objects.hash(id);
+    }
+    public TaskTypes getType() {
+        return taskType;
     }
 
     @Override
@@ -49,7 +70,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", taskType=" + taskType +
                 '}';
     }
 }
-

@@ -1,13 +1,10 @@
-import java.util.HashMap;
-
 public class Subtask extends Task {
-    Status status = Status.NEW;
     int epicId;
 
-
-    public Subtask(String name, String description, int id, int epicId) {
-        super(name, description, id);
+    public Subtask(String name, String description, int epicId, Status status) {
+        super(name, description, status);
         this.epicId = epicId;
+        taskType = TaskTypes.SUBTASK;
     }
 
     public int getEpicId() {
@@ -19,32 +16,14 @@ public class Subtask extends Task {
     }
 
     @Override
-    public Status getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-
-
-    @Override
-    public String getName() {
-        return super.getName();
-    }
-
-    @Override
     public String toString() {
         return "Subtask{" +
-                ", epicId=" + epicId +
+                "epicId=" + epicId +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
+                ", taskType=" + taskType +
                 '}';
     }
 }
-
-
