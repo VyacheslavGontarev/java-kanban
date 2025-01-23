@@ -46,7 +46,9 @@ public class FileBackedTaskManagerTest {
     @Test
     void saveAndLoadEmptyFile() throws IOException {
         FileBackedTaskManager manager = new FileBackedTaskManager(file.getAbsolutePath());
-        manager.save();
+        Task task = new Task("Name", "Description", Status.NEW);
+        manager.createTask(task);
+        manager.deleteAllTasks();
         List<String> lines = Files.readAllLines(file.toPath());
         assertNotNull(lines, "Файл пуст");
         assertTrue(file.exists(), "Файл не существует");

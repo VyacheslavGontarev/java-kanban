@@ -6,59 +6,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     String file;
 
     public FileBackedTaskManager(String file) {
+
         this.file = file;
     }
 
-    public void save() {
-        try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
-             BufferedWriter buf = new BufferedWriter(fileWriter)) {
-            buf.write("id,type,name,status,description,epic\n");
-            for (Task task : getAllTasks()) {
-                buf.write(toString(task) + "\n");
-            }
-            for (Task epic : getAllEpics()) {
-                buf.write(toString(epic) + "\n");
-            }
-            for (Task subtask : getAllSubtasks()) {
-                buf.write(toString(subtask) + "\n");
-            }
-        } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка записи");
-        }
-    }
-
-    public int getEpicId(Task task) {
-        return ((Subtask) task).getEpicId();
-    }
-
-    public String toString(Task task) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(task.getId() + "," + task.getType() + "," + task.getName() +
-                "," + task.getStatus() + "," + task.getDescription() + ",");
-        if (task.getType() == TaskTypes.SUBTASK) {
-            builder.append(getEpicId(task));
-        }
-        return builder.toString();
-    }
-
-    public static Task fromString(String value) {
-        String[] args = value.split(",");
-        if (TaskTypes.valueOf(args[1]) == TaskTypes.TASK) {
-            Task task = new Task(args[2], args[4], Status.valueOf(args[3]));
-            task.setId(Integer.parseInt(args[0]));
-            return task;
-        } else if (TaskTypes.valueOf(args[1]) == TaskTypes.EPIC) {
-            Epic epic = new Epic(args[2], args[4], Status.valueOf(args[3]));
-            epic.setId(Integer.parseInt(args[0]));
-            return epic;
-        } else {
-            Subtask subtask = new Subtask(args[2], args[4], Integer.parseInt(args[5]), Status.valueOf(args[3]));
-            subtask.setId(Integer.parseInt(args[0]));
-            return subtask;
-        }
-    }
-
-    static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file.getAbsolutePath());
         try (FileReader fileReader = new FileReader(file, StandardCharsets.UTF_8);
              BufferedReader buf = new BufferedReader(fileReader)) {
@@ -80,6 +32,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             throw new ManagerSaveException("Ошибка чтения");
         }
         return manager;
+    }
+
+    public static void main(String[] args) {
+        File file = new File("SavedTasks.csv");
+        FileBackedTaskManager manager = new FileBackedTaskManager(file.getName());
+        Task task = new Task("Сходить в магазин", "Пятёрочка топ", Status.NEW);
+        manager.createTask(task);
+        Task task1 = new Task("Получить баллы на карту x5 клуба", "Карту нужно активировать", Status.NEW);
+        manager.createTask(task1);
+        Epic epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW);
+        manager.createEpic(epic);
+        Subtask subtask = new Subtask("Понюхать хвостик","Будет вкусно пахнуть", 2, Status.NEW);
+        manager.createSubtask(subtask);
+        Subtask subtask1 = new Subtask("Постучать по арбузу","Должен глухо звучать", 2, Status.NEW);
+        manager.createSubtask(subtask1);
+        Subtask subtask2 = new Subtask("Спросить совет продавца", "Нужно чтоб сказал ДА СПЕЛЫЙ ОН", 2, Status.NEW);
+        manager.createSubtask(subtask2);
+        Epic epic1 = new Epic("Купить молоко","Нужно свежее", Status.NEW);
+        manager.createEpic(epic1);
+        FileBackedTaskManager newManager = loadFromFile(file);
+        Task task2 = new Task("Сходить за прессой", "Где Союз Печать?", Status.NEW);
+        newManager.createTask(task2);
     }
 
     @Override
@@ -160,25 +134,52 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         save();
     }
 
-    public static void main(String[] args) {
-        File file = new File("SavedTasks.csv");
-        FileBackedTaskManager manager = new FileBackedTaskManager(file.getName());
-        Task task = new Task("Сходить в магазин", "Пятёрочка топ", Status.NEW);
-        manager.createTask(task);
-        Task task1 = new Task("Получить баллы на карту x5 клуба", "Карту нужно активировать", Status.NEW);
-        manager.createTask(task1);
-        Epic epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW);
-        manager.createEpic(epic);
-        Subtask subtask = new Subtask("Понюхать хвостик","Будет вкусно пахнуть", 2, Status.NEW);
-        manager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask("Постучать по арбузу","Должен глухо звучать", 2, Status.NEW);
-        manager.createSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Спросить совет продавца", "Нужно чтоб сказал ДА СПЕЛЫЙ ОН", 2, Status.NEW);
-        manager.createSubtask(subtask2);
-        Epic epic1 = new Epic("Купить молоко","Нужно свежее", Status.NEW);
-        manager.createEpic(epic1);
-        FileBackedTaskManager newManager = loadFromFile(file);
-        Task task2 = new Task("Сходить за прессой", "Где Союз Печать?", Status.NEW);
-        newManager.createTask(task2);
+    private void save() {
+        try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
+             BufferedWriter buf = new BufferedWriter(fileWriter)) {
+            buf.write("id,type,name,status,description,epic\n");
+            for (Task task : getAllTasks()) {
+                buf.write(toString(task) + "\n");
+            }
+            for (Task epic : getAllEpics()) {
+                buf.write(toString(epic) + "\n");
+            }
+            for (Task subtask : getAllSubtasks()) {
+                buf.write(toString(subtask) + "\n");
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка записи");
+        }
+    }
+
+    private int getEpicId(Task task) {
+        return ((Subtask) task).getEpicId();
+    }
+
+    private String toString(Task task) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(task.getId() + "," + task.getType() + "," + task.getName() +
+                "," + task.getStatus() + "," + task.getDescription() + ",");
+        if (task.getType() == TaskTypes.SUBTASK) {
+            builder.append(getEpicId(task));
+        }
+        return builder.toString();
+    }
+
+    private static Task fromString(String value) {
+        String[] args = value.split(",");
+        if (TaskTypes.valueOf(args[1]) == TaskTypes.TASK) {
+            Task task = new Task(args[2], args[4], Status.valueOf(args[3]));
+            task.setId(Integer.parseInt(args[0]));
+            return task;
+        } else if (TaskTypes.valueOf(args[1]) == TaskTypes.EPIC) {
+            Epic epic = new Epic(args[2], args[4], Status.valueOf(args[3]));
+            epic.setId(Integer.parseInt(args[0]));
+            return epic;
+        } else {
+            Subtask subtask = new Subtask(args[2], args[4], Integer.parseInt(args[5]), Status.valueOf(args[3]));
+            subtask.setId(Integer.parseInt(args[0]));
+            return subtask;
+        }
     }
 }
