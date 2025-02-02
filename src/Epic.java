@@ -1,57 +1,32 @@
-import java.util.HashMap;
+import java.util.ArrayList;
+
 public class Epic extends Task {
-   static HashMap<Integer, Subtask> subtask = new HashMap<>();
 
-    public Epic(String name, String description, int id) {
-        super(name, description, id);
-    }
-    public static void putSubtask(Integer name, Subtask quest) {
-        subtask.put(name, quest);
-    }
+    private ArrayList<Integer> subtask;
 
-    @Override
-    public String getName() {
-        return super.getName();
+    public Epic(String name, String description, Status status) {
+        super(name, description, status);
+        this.subtask = new ArrayList<>();
+        taskType = TaskTypes.EPIC;
     }
 
-    public void changeEpicStatusDone() {
-        if (!subtask.isEmpty()) {
-            boolean check = false;
-            for (Subtask tusk : subtask.values()) {
-                if (!(tusk.getStatus() == Status.DONE)) {
-                    check = true;
-                }
-            }
-                if (check == false) {
-                    setStatus(Status.DONE);
-                    System.out.println("Эпик завершён!");
-            }
-        }
+    public ArrayList<Integer> getSubtask() {
+        return subtask;
     }
-    public void deleteAllSubtasks(){
-        if (!subtask.isEmpty()) {
-            for (int key : subtask.keySet()){
-                subtask.remove(key);
-            }
-        }
-    }
-    public void removeSubtask(int id) {
-        this.subtask.remove(id);
-    }
-    public boolean subtaskIsEmpty(){
-        return this.subtask.isEmpty();
+
+    public void setSubtask(ArrayList<Integer> subtask) {
+        this.subtask = subtask;
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "name='" + name + '\'' +
+                "subtask=" + subtask +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status=" + status +
-                ", subtasks=" + subtask +
+                ", taskType=" + taskType +
                 '}';
     }
 }
-
-
