@@ -68,6 +68,19 @@ public class Task {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                ", taskType=" + taskType +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                '}';
+    }
+
     public TaskTypes getType() {
         return taskType;
     }
@@ -96,18 +109,10 @@ public class Task {
         this.startTime = startTime;
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                ", taskType=" + taskType +
-                ", duration=" + duration +
-                ", startTime=" + startTime +
-                '}';
+    public int comparator(Task t1, Task t2) {
+        return t1.getStartTime().compareTo(t2.getStartTime());
     }
+
     /*public LocalDateTime startTimeFormatter(String startTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         if (startTime.isBlank()) {

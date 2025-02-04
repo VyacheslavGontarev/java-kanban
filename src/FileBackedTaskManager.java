@@ -3,6 +3,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 
 import exception.ManagerSaveException;
 
@@ -65,6 +67,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         Task task2 = new Task("Сходить за прессой", "Где Союз Печать?", Status.NEW,
                 LocalDateTime.parse("03.02.2025 00:31", formatter), Duration.ofMinutes(20));
         newManager.createTask(task2);
+        newManager.printTasks();
     }
 
     @Override
@@ -145,10 +148,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         save();
     }
 
+    @Override
+    public List<Task> getPrioritizedTasks() {
+       return super.getPrioritizedTasks();
+    }
+
+    @Override
+    public void updateEpicStartTime(Epic epic) {
+        super.updateEpicStartTime(epic);
+        save();
+    }
+
+    @Override
+    public void updateEpicDuration(Epic epic) {
+        super.updateEpicDuration(epic);
+        save();
+    }
+
     private void save() {
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
              BufferedWriter buf = new BufferedWriter(fileWriter)) {
             buf.write("id,type,name,status,description,startTime,duration,epic\n");
+            getAllTasks().stream().map(task -> buf.write(toString(task) + "\n"));
             for (Task task : getAllTasks()) {
                 buf.write(toString(task) + "\n");
             }
@@ -163,14 +184,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         }
     }
 
+    private void printTasks() {
+        System.out.println(getPrioritizedTasks());
+    }
+
     private int getEpicId(Task task) {
         return ((Subtask) task).getEpicId();
     }
 
     private String toString(Task task) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        String str;
+        if (task.getStartTime() == null){
+            str = null;
+        } else {
+            str = task.getStartTime().format(formatter);
+        }
         StringBuilder builder = new StringBuilder();
         builder.append(task.getId() + "," + task.getType() + "," + task.getName() +
-                "," + task.getStatus() + "," + task.getDescription() + "," + task.getStartTime() +
+                "," + task.getStatus() + "," + task.getDescription() + "," + str +
                 "," + task.getDuration().toMinutes() + ",");
         if (task.getType() == TaskTypes.SUBTASK) {
             builder.append(getEpicId(task));
@@ -178,46 +210,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return builder.toString();
     }
 
-    private static Task fromString(String value) {
+    private static Task fromString(String value) throws NumberFormatException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         String[] args = value.split(",");
         if (TaskTypes.valueOf(args[1]) == TaskTypes.TASK) {
-            if (args[5] != null) {
-                Task task = new Task(args[2], args[4], Status.valueOf(args[3]), LocalDateTime.parse(args[5]),
-                        Duration.ofMinutes(Integer.parseInt(args[6])));
-
-                task.setId(Integer.parseInt(args[0]));
-                return task;
-            } else {
-                Task task = new Task(args[2], args[4], Status.valueOf(args[3]), null,
-                        Duration.ofMinutes(Integer.parseInt(args[6])));
-
-                task.setId(Integer.parseInt(args[0]));
-                return task;
-            }
+            Task task = new Task(args[2], args[4], Status.valueOf(args[3]), LocalDateTime.parse(args[5], formatter),
+                    Duration.ofMinutes(Integer.parseInt(args[6])));
+            task.setId(Integer.parseInt(args[0]));
+            return task;
         } else if (TaskTypes.valueOf(args[1]) == TaskTypes.EPIC) {
-            if (args[5] != null) {
-                Epic epic = new Epic(args[2], args[4], Status.valueOf(args[3]), LocalDateTime.parse(args[5]),
-                        Duration.ofMinutes(Integer.parseInt(args[6])));
-                epic.setId(Integer.parseInt(args[0]));
-                return epic;
+            Epic epic;
+            if (args[5].equals("null")) {
+                epic = new Epic(args[2], args[4], Status.valueOf(args[3]), null,
+                        Duration.ofMinutes(Integer.parseInt((args[6]))));
             } else {
-                Epic epic = new Epic(args[2], args[4], Status.valueOf(args[3]), null,
+                epic = new Epic(args[2], args[4], Status.valueOf(args[3]), LocalDateTime.parse(args[5], formatter),
                         Duration.ofMinutes(Integer.parseInt(args[6])));
-                epic.setId(Integer.parseInt(args[0]));
-                return epic;
             }
+            epic.setId(Integer.parseInt(args[0]));
+            return epic;
         } else {
-            if (args[5] != null) {
-                Subtask subtask = new Subtask(args[2], args[4], Integer.parseInt(args[5]), Status.valueOf(args[3]),
-                        LocalDateTime.parse(args[5]), Duration.ofMinutes(Integer.parseInt(args[6])));
-                subtask.setId(Integer.parseInt(args[0]));
-                return subtask;
-            } else {
-                Subtask subtask = new Subtask(args[2], args[4], Integer.parseInt(args[5]), Status.valueOf(args[3]),
-                        LocalDateTime.parse(args[5]), Duration.ofMinutes(Integer.parseInt(args[6])));
-                subtask.setId(Integer.parseInt(args[0]));
-                return subtask;
-            }
+            Subtask subtask = new Subtask(args[2], args[4], Integer.parseInt(args[7]), Status.valueOf(args[3]),
+                        LocalDateTime.parse(args[5], formatter), Duration.ofMinutes(Integer.parseInt(args[6])));
+            subtask.setId(Integer.parseInt(args[0]));
+            return subtask;
         }
     }
 }

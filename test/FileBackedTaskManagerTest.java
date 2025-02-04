@@ -54,7 +54,7 @@ public class FileBackedTaskManagerTest {
         assertTrue(file.exists(), "Файл не существует");
         assertEquals(lines.size(), 1, "Количество строк не совпадает");
         FileBackedTaskManager newManager = manager.loadFromFile(file);
-        ArrayList<Task> tasks = newManager.getAllTasks();
+        List<Task> tasks = newManager.getAllTasks();
         assertNotNull(tasks, "Файл пуст");
         assertEquals(tasks.size(), 0, "Задачи есть");
     }
