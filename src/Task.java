@@ -1,3 +1,6 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -6,13 +9,18 @@ public class Task {
     int id;
     Status status;
     TaskTypes taskType;
+    Duration duration;
+    LocalDateTime startTime;
 
-    public Task(String name, String description, Status status) {
+
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
         taskType = TaskTypes.TASK;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public String getName() {
@@ -64,6 +72,30 @@ public class Task {
         return taskType;
     }
 
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+           return startTime.plus(duration);
+        } else {
+            return null;
+        }
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public String toString() {
         return "Task{" +
@@ -72,6 +104,21 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 ", taskType=" + taskType +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
                 '}';
     }
+    /*public LocalDateTime startTimeFormatter(String startTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        if (startTime.isBlank()) {
+            return null;
+        }
+        return LocalDateTime.parse(startTime, formatter);
+    } */
+   /* public Duration durationSetter(int duration) {
+        if (duration <= 0) {
+            return null;
+        }
+        return Duration.ofMinutes(duration);
+    }*/
 }

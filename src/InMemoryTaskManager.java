@@ -1,6 +1,7 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -32,10 +33,13 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Integer> sub = epics.get(subtask.getEpicId()).getSubtask();
         sub.add(subtask.getId());
         Epic epic = new Epic(epics.get(subtask.getEpicId()).getName(),epics.get(subtask.getEpicId()).getDescription(),
-                epics.get(subtask.getEpicId()).getStatus());
+                epics.get(subtask.getEpicId()).getStatus(), epics.get(subtask.getEpicId()).getStartTime(),
+                epics.get(subtask.getEpicId()).getDuration());
         epic.setId(subtask.getEpicId());
         epic.setSubtask(sub);
         updateEpicStatus(epic);
+        updateEpicStartTime(epic);
+        updateEpicDuration(epic);
     }
 
     @Override
@@ -84,6 +88,8 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
         for (Epic epic : epics.values()) {
             updateEpicStatus(epic);
+            updateEpicStartTime(epic);
+            updateEpicDuration(epic);
         }
     }
 
@@ -136,6 +142,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getId() != subtask.getEpicId()) {
             if (epics.get(subtask.getEpicId()) != null) {
                 updateEpicStatus(epics.get(subtask.getEpicId()));
+                updateEpicStartTime(epics.get(subtask.getEpicId()));
+                updateEpicDuration(epics.get(subtask.getEpicId()));
             }
         }
     }
@@ -170,6 +178,8 @@ public class InMemoryTaskManager implements TaskManager {
                 Epic epic = epics.get(epicId);
                 epic.getSubtask().remove(epic.getSubtask().indexOf(id));
                 updateEpicStatus(epic);
+                updateEpicStartTime(epic);
+                updateEpicDuration(epic);
             }
             history.remove(id);
         }
@@ -186,19 +196,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicStatus(Epic epic) {
-        ArrayList<Subtask> epicSubtask = new ArrayList<>();
-        for (int i : epic.getSubtask()) {
-            if (subtasks.get(i) != null) {
-                epicSubtask.add(subtasks.get(i));
-            }
-        }
-        if (epicSubtask == null) {
+        List<Subtask> epicSubtasks = subtasks.keySet().stream().
+                filter(key -> epic.getSubtask().contains(key)).
+                map(key -> subtasks.get(key)).
+                collect(Collectors.toList());
+        if (epicSubtasks == null) {
             epic.setStatus(Status.NEW);
             return;
         }
         boolean allDone = true;
         boolean allNew = true;
-        for (Subtask subtask : epicSubtask) {
+        for (Subtask subtask : epicSubtasks) {
             if (subtask.getStatus() != Status.DONE) {
                 allDone = false;
             }
@@ -224,5 +232,32 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getStory() {
         return history.getHistory();
+    }
+
+    public void updateEpicStartTime(Epic epic) {
+        List<Subtask> epicSubtasks = subtasks.keySet().stream().
+                filter(key -> epic.getSubtask().contains(key)).
+                map(key -> subtasks.get(key)).
+                collect(Collectors.toList());
+        if (epicSubtasks == null) {
+            epic.setStartTime(null);
+            return;
+        }
+        LocalDateTime earliestStartTime = epicSubtasks.stream().
+                map(subtask -> subtask.getStartTime()).
+                min(LocalDateTime::compareTo).
+                orElseThrow(NoSuchElementException::new);
+        epic.setStartTime(earliestStartTime);
+        epic.getDuration();
+    }
+
+    public void updateEpicDuration(Epic epic) {
+        epic.setDuration(subtasks.keySet().stream().
+                filter(key -> epic.getSubtask().contains(key)).
+                map(key -> subtasks.get(key)).
+                map(subtask -> subtask.getDuration()).
+                reduce(Duration.ZERO, Duration::plus));
+
+        epic.getDuration();
     }
 }

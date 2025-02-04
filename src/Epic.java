@@ -1,11 +1,12 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-
     private ArrayList<Integer> subtask;
 
-    public Epic(String name, String description, Status status) {
-        super(name, description, status);
+    public Epic(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        super(name, description, status, startTime, duration);
         this.subtask = new ArrayList<>();
         taskType = TaskTypes.EPIC;
     }
