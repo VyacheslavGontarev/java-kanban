@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import exception.ManagerSaveException;
 
@@ -34,6 +35,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     manager.createTask(task);
                 }
             }
+            buf.close();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения");
         }
@@ -169,16 +171,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
              BufferedWriter buf = new BufferedWriter(fileWriter)) {
             buf.write("id,type,name,status,description,startTime,duration,epic\n");
-            getAllTasks().stream().map(task -> buf.write(toString(task) + "\n"));
-            for (Task task : getAllTasks()) {
-                buf.write(toString(task) + "\n");
-            }
-            for (Task epic : getAllEpics()) {
-                buf.write(toString(epic) + "\n");
-            }
-            for (Task subtask : getAllSubtasks()) {
-                buf.write(toString(subtask) + "\n");
-            }
+            buf.write(getAllTasks().stream()
+                    .map(task -> toString(task)).
+                    collect(Collectors.joining( "\n")));
+            buf.write("\n");
+            buf.write(getAllEpics().stream()
+                    .map(task -> toString(task)).
+                    collect(Collectors.joining( "\n")));
+            buf.write("\n");
+            buf.write(getAllSubtasks().stream()
+                    .map(task -> toString(task)).
+                    collect(Collectors.joining( "\n")));
+            buf.write("\n");
+            buf.close();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи");
         }

@@ -16,10 +16,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        if (timeValidator(task)) {
+        if (!timeValidator(task)) {
             task.setId(generateId());
             tasks.put(task.getId(), task);
             prioritizedTasks.add(task);
+            System.out.println("Task Created"); //TODO
         }
     }
 
@@ -31,7 +32,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubtask(Subtask subtask) {
-        if (timeValidator(subtask)) {
+        if (!timeValidator(subtask)) {
             subtask.setId(generateId());
             subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
@@ -45,6 +46,8 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicStatus(epic);
             updateEpicStartTime(epic);
             updateEpicDuration(epic);
+
+            System.out.println("Subtask Created"); //TODO
         }
     }
 
@@ -279,13 +282,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public boolean timeValidator(Task task) {
-        return prioritizedTasks.stream().anyMatch(exTask -> {
-                    if (task.getStartTime().isBefore(exTask.getEndTime()) && task.getEndTime().isAfter(exTask.getStartTime())) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-        );
+        return prioritizedTasks.stream().anyMatch(exTask ->
+                    (task.getStartTime().isBefore(exTask.getEndTime()) &&
+                            task.getEndTime().isAfter(exTask.getStartTime())));
     }
 }
