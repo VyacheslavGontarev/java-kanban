@@ -1,6 +1,5 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -87,7 +86,7 @@ public class Task {
 
     public LocalDateTime getEndTime() {
         if (startTime != null) {
-           return startTime.plus(duration);
+            return startTime.plus(duration);
         } else {
             return null;
         }
@@ -112,18 +111,4 @@ public class Task {
     public int comparator(Task t1, Task t2) {
         return t1.getStartTime().compareTo(t2.getStartTime());
     }
-
-    /*public LocalDateTime startTimeFormatter(String startTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        if (startTime.isBlank()) {
-            return null;
-        }
-        return LocalDateTime.parse(startTime, formatter);
-    } */
-   /* public Duration durationSetter(int duration) {
-        if (duration <= 0) {
-            return null;
-        }
-        return Duration.ofMinutes(duration);
-    }*/
 }

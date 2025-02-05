@@ -35,7 +35,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     manager.createTask(task);
                 }
             }
-            buf.close();
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения");
         }
@@ -54,17 +53,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         manager.createTask(task1);
         Epic epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW, null, Duration.ofMinutes(0));
         manager.createEpic(epic);
-        Subtask subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 2, Status.NEW,
+        Subtask subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 2, Status.DONE,
                 LocalDateTime.parse("05.02.2025 01:48", formatter), Duration.ofMinutes(1));
         manager.createSubtask(subtask);
-        manager.updateSubtask(subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 2,
-                Status.IN_PROGRESS, LocalDateTime.parse("05.02.2025 01:48", formatter), Duration.ofMinutes(1)));
-        System.out.println(manager.getEpicByID(2));
-        Subtask subtask1 = new Subtask("Постучать по арбузу", "Должен глухо звучать", 2, Status.NEW,
+        //manager.updateSubtask(subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 2,
+        //        Status.IN_PROGRESS, LocalDateTime.parse("05.02.2025 01:48", formatter), Duration.ofMinutes(1)));
+        Subtask subtask1 = new Subtask("Постучать по арбузу", "Должен глухо звучать", 2, Status.DONE,
                 LocalDateTime.parse("05.02.2025 02:48", formatter), Duration.ofMinutes(30));
         manager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("Спросить совет продавца", "Нужно чтоб сказал ДА СПЕЛЫЙ ОН",
-                2, Status.NEW, LocalDateTime.parse("05.02.2025 03:48", formatter), Duration.ofMinutes(30));
+                2, Status.DONE, LocalDateTime.parse("05.02.2025 03:48", formatter), Duration.ofMinutes(30));
         manager.createSubtask(subtask2);
         Epic epic1 = new Epic("Купить молоко", "Нужно свежее", Status.NEW, null, Duration.ofMinutes(0));
         manager.createEpic(epic1);
@@ -72,6 +70,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         Task task2 = new Task("Сходить за прессой", "Где Союз Печать?", Status.NEW,
                 LocalDateTime.parse("03.02.2025 00:31", formatter), Duration.ofMinutes(20));
         newManager.createTask(task2);
+        System.out.println(newManager.convertMbTask(2));
         newManager.printTasks();
     }
 
@@ -175,18 +174,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
              BufferedWriter buf = new BufferedWriter(fileWriter)) {
             buf.write("id,type,name,status,description,startTime,duration,epic\n");
             buf.write(getAllTasks().stream()
-                    .map(task -> toString(task)).
-                    collect(Collectors.joining( "\n")));
-            buf.write("\n");
+                    .map(task -> toString(task)  + "\n").
+                    collect(Collectors.joining()));
             buf.write(getAllEpics().stream()
-                    .map(task -> toString(task)).
-                    collect(Collectors.joining( "\n")));
-            buf.write("\n");
+                    .map(task -> toString(task) + "\n").
+                    collect(Collectors.joining()));
             buf.write(getAllSubtasks().stream()
-                    .map(task -> toString(task)).
-                    collect(Collectors.joining( "\n")));
-            buf.write("\n");
-            buf.close();
+                    .map(task -> toString(task)+ "\n").
+                    collect(Collectors.joining()));
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи");
         }
@@ -221,6 +216,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private static Task fromString(String value) throws NumberFormatException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         String[] args = value.split(",");
+
         if (TaskTypes.valueOf(args[1]) == TaskTypes.TASK) {
             Task task = new Task(args[2], args[4], Status.valueOf(args[3]), LocalDateTime.parse(args[5], formatter),
                     Duration.ofMinutes(Integer.parseInt(args[6])));

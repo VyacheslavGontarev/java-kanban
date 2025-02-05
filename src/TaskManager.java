@@ -44,4 +44,13 @@ public interface TaskManager {
 
     List<Task> getStory();
 
+    void updateEpicStartTime(Epic epic);
+
+    void updateEpicDuration(Epic epic);
+
+    List<Task> getPrioritizedTasks();
+
+    boolean timeValidator(Task task);
+
+    void epicEndTime(Epic epic);
 }
