@@ -179,7 +179,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     .map(task -> toString(task) + "\n")
                     .collect(Collectors.joining()));
             buf.write(getAllSubtasks().stream()
-                    .map(task -> toString(task)+ "\n")
+                    .map(task -> toString(task) + "\n")
                     .collect(Collectors.joining()));
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи");
@@ -197,7 +197,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private String toString(Task task) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         String str;
-        if (task.getStartTime() == null){
+        if (task.getStartTime() == null) {
             str = null;
         } else {
             str = task.getStartTime().format(formatter);
