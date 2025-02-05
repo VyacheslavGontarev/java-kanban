@@ -173,14 +173,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
              BufferedWriter buf = new BufferedWriter(fileWriter)) {
             buf.write("id,type,name,status,description,startTime,duration,epic\n");
             buf.write(getAllTasks().stream()
-                    .map(task -> toString(task)  + "\n").
-                    collect(Collectors.joining()));
+                    .map(task -> toString(task)  + "\n")
+                    .collect(Collectors.joining()));
             buf.write(getAllEpics().stream()
-                    .map(task -> toString(task) + "\n").
-                    collect(Collectors.joining()));
+                    .map(task -> toString(task) + "\n")
+                    .collect(Collectors.joining()));
             buf.write(getAllSubtasks().stream()
-                    .map(task -> toString(task)+ "\n").
-                    collect(Collectors.joining()));
+                    .map(task -> toString(task)+ "\n")
+                    .collect(Collectors.joining()));
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи");
         }
