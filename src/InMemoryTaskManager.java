@@ -1,6 +1,7 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -20,7 +21,6 @@ public class InMemoryTaskManager implements TaskManager {
             task.setId(generateId());
             tasks.put(task.getId(), task);
             prioritizedTasks.add(task);
-            System.out.println("Task Created"); //TODO
         }
     }
 
@@ -46,8 +46,6 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicStatus(epic);
             updateEpicStartTime(epic);
             updateEpicDuration(epic);
-
-            System.out.println("Subtask Created"); //TODO
         }
     }
 
@@ -87,9 +85,9 @@ public class InMemoryTaskManager implements TaskManager {
                 peek(task -> prioritizedTasks.remove(task));
         subtasks.clear();
         epics.values().stream().
-            peek(task -> updateEpicStatus(task)).
-            peek(task  -> updateEpicStartTime(task)).
-            peek(task -> updateEpicDuration(task));
+                peek(task -> updateEpicStatus(task)).
+                peek(task -> updateEpicStartTime(task)).
+                peek(task -> updateEpicDuration(task));
     }
 
     @Override
@@ -99,7 +97,7 @@ public class InMemoryTaskManager implements TaskManager {
                 peek(task -> prioritizedTasks.remove(task));
         subtasks.clear();
         epics.values().stream().
-            peek(epic -> history.remove(epic.getId()));
+                peek(epic -> history.remove(epic.getId()));
         epics.clear();
     }
 
@@ -202,17 +200,20 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicStatus(Epic epic) {
+       /* System.out.println("Вход в метод");
         List<Subtask> epicSubtasks = subtasks.keySet().stream().
                 filter(key -> epic.getSubtask().contains(key)).
                 map(key -> subtasks.get(key)).
                 collect(Collectors.toList());
         if (epicSubtasks == null) {
             epic.setStatus(Status.NEW);
+            System.out.println("цикл");
             return;
         }
-        epicSubtasks.stream().
-                peek(subtask -> {
+        System.out.println("После цикла");
 
+        System.out.println(epicSubtasks.stream().
+                map(subtask -> {
                     boolean allDone = true;
                     boolean allNew = true;
                     if (subtask.getStatus() != Status.DONE) {
@@ -220,17 +221,39 @@ public class InMemoryTaskManager implements TaskManager {
                     }
                     if (subtask.getStatus() != Status.NEW) {
                         allNew = false;
+                        System.out.println("Status: " + subtask.getStatus());
+                        System.out.println("Flag: " + allNew);
                     }
                     if (allDone) {
-                        epic.setStatus(Status.DONE);
-                        return;
+                        return Status.DONE;
                     } else if (allNew) {
-                        epic.setStatus(Status.NEW);
-                        return;
+                        return Status.NEW;
                     } else {
-                        epic.setStatus(Status.IN_PROGRESS);
+                        return Status.IN_PROGRESS;
                     }
-                });
+                }).; */
+
+        int completedTasks = 0;
+        int newTasks = 0;
+        for (Integer subId : epic.getSubtask()) {
+            Subtask subTask1 = subtasks.get(subId);
+            if (subTask1.getStatus().equals(Status.DONE)) {
+                completedTasks++;
+            } else if (subTask1.getStatus().equals(Status.NEW)) {
+                newTasks++;
+            }
+        }
+
+        if (completedTasks == epic.getSubtask().size()) {
+            epic.setStatus(Status.DONE);
+        } else if (newTasks == epic.getSubtask().size() || epic.getSubtask().isEmpty()) {
+            epic.setStatus(Status.NEW);
+        } else {
+            epic.setStatus(Status.IN_PROGRESS);
+        }
+
+
+
     }
 
     public int generateId() {
@@ -255,11 +278,9 @@ public class InMemoryTaskManager implements TaskManager {
         int id = epic.getId();
         LocalDateTime earliestStartTime = epicSubtasks.stream().
                 map(subtask -> subtask.getStartTime()).
-                min(LocalDateTime::compareTo).
-                orElseThrow(NoSuchElementException::new);
-        epic = new Epic(epic.getName(), epic.getDescription(), epic.getStatus(), earliestStartTime, epic.getDuration());
-        epic.setId(id);
-        epic.setEndTime();
+                min(LocalDateTime::compareTo).get();
+        epic.setStartTime(earliestStartTime);
+        epicEndTime(epic);
         epics.put(id, epic);
     }
 
@@ -271,9 +292,8 @@ public class InMemoryTaskManager implements TaskManager {
                 map(key -> subtasks.get(key)).
                 map(subtask -> subtask.getDuration()).
                 reduce(Duration.ZERO, Duration::plus);
-        epic = new Epic(epic.getName(), epic.getDescription(), epic.getStatus(), epic.getStartTime(), duration);
-        epic.setId(id);
-        epic.setEndTime();
+        epic.setDuration(duration);
+        epicEndTime(epic);
         epics.put(id, epic);
     }
 
@@ -283,7 +303,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     public boolean timeValidator(Task task) {
         return prioritizedTasks.stream().anyMatch(exTask ->
-                    (task.getStartTime().isBefore(exTask.getEndTime()) &&
-                            task.getEndTime().isAfter(exTask.getStartTime())));
+                (task.getStartTime().isBefore(exTask.getEndTime()) &&
+                        task.getEndTime().isAfter(exTask.getStartTime())));
+    }
+
+    public void epicEndTime(Epic epic) {
+        if (epic.getStartTime() != null) {
+            epic.setEndTime(epic.getStartTime().plus(epic.getDuration()));
+        }
     }
 }

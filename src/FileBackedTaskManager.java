@@ -57,6 +57,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         Subtask subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 2, Status.NEW,
                 LocalDateTime.parse("05.02.2025 01:48", formatter), Duration.ofMinutes(1));
         manager.createSubtask(subtask);
+        manager.updateSubtask(subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 2,
+                Status.IN_PROGRESS, LocalDateTime.parse("05.02.2025 01:48", formatter), Duration.ofMinutes(1)));
+        System.out.println(manager.getEpicByID(2));
         Subtask subtask1 = new Subtask("Постучать по арбузу", "Должен глухо звучать", 2, Status.NEW,
                 LocalDateTime.parse("05.02.2025 02:48", formatter), Duration.ofMinutes(30));
         manager.createSubtask(subtask1);

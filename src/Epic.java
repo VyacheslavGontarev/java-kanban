@@ -35,9 +35,9 @@ public class Epic extends Task {
                 '}';
     }
 
-    public void setEndTime() {
+    public void setEndTime(LocalDateTime endTime) {
         if (startTime != null) {
-            this.endTime = startTime.plus(duration);
+            this.endTime = endTime;
         }
     }
 }
