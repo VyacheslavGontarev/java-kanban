@@ -189,12 +189,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public List<Subtask> getSubtasksByEpicId(int epicId) {
-        return epics.get(epicId).getSubtask().stream()
-                .map(subtaskId -> subtasks.get(subtaskId))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void updateEpicStatus(Epic epic) {
@@ -215,6 +209,13 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
+    }
+
+    @Override
+    public List<Subtask> getSubtasksByEpicId(int epicId) {
+        return epics.get(epicId).getSubtask().stream()
+                .map(subtaskId -> subtasks.get(subtaskId))
+                .collect(Collectors.toList());
     }
 
     @Override
