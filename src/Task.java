@@ -1,3 +1,5 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -6,13 +8,18 @@ public class Task {
     int id;
     Status status;
     TaskTypes taskType;
+    Duration duration;
+    LocalDateTime startTime;
 
-    public Task(String name, String description, Status status) {
+
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
         taskType = TaskTypes.TASK;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public String getName() {
@@ -60,10 +67,6 @@ public class Task {
         return Objects.hash(id);
     }
 
-    public TaskTypes getType() {
-        return taskType;
-    }
-
     @Override
     public String toString() {
         return "Task{" +
@@ -72,6 +75,40 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status +
                 ", taskType=" + taskType +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
                 '}';
+    }
+
+    public TaskTypes getType() {
+        return taskType;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plus(duration);
+        } else {
+            return null;
+        }
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public int comparator(Task t1, Task t2) {
+        return t1.getStartTime().compareTo(t2.getStartTime());
     }
 }

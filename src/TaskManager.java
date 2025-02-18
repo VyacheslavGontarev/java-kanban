@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -8,11 +7,11 @@ public interface TaskManager {
 
     void createSubtask(Subtask subtask);
 
-    ArrayList<Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    ArrayList<Epic> getAllEpics();
+    List<Epic> getAllEpics();
 
-    ArrayList<Subtask> getAllSubtasks();
+    List<Subtask> getAllSubtasks();
 
     void deleteAllTasks();
 
@@ -38,10 +37,19 @@ public interface TaskManager {
 
     void delOneSubtask(int id);
 
-    ArrayList<Subtask> getSubtasksByEpicId(int epicId);
+    List<Subtask> getSubtasksByEpicId(int epicId);
 
     void updateEpicStatus(Epic epic);
 
     List<Task> getStory();
 
+    void updateEpicStartTime(Epic epic);
+
+    void updateEpicDuration(Epic epic);
+
+    List<Task> getPrioritizedTasks();
+
+    boolean timeValidator(Task task);
+
+    void epicEndTime(Epic epic);
 }

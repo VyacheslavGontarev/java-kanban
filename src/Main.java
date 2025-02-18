@@ -1,25 +1,38 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Main {
 
     public static void main(String[] args) {
         Managers managers = new Managers();
         TaskManager taskManager = managers.getDefault();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("SavedTasks.csv");
         System.out.println("Поехали!");
-        Task task = new Task("Сходить в магазин", "Пятёрочка топ", Status.NEW);
+        Task task = new Task("Сходить в магазин", "Пятёрочка топ", Status.NEW,
+                LocalDateTime.parse("04.02.2025 01:48", formatter), Duration.ofMinutes(30));
         taskManager.createTask(task);
-        Task task1 = new Task("Получить баллы на карту x5 клуба", "Карту нужно активировать", Status.NEW);
+        Task task1 = new Task("Получить баллы на карту x5 клуба", "Карту нужно активировать", Status.NEW,
+                LocalDateTime.parse("04.02.2025 03:48", formatter), Duration.ofMinutes(30));
         taskManager.createTask(task1);
-        Epic epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW);
+        Epic epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW, null, null);
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("Понюхать хвостик","Будет вкусно пахнуть", 2, Status.NEW);
+        Subtask subtask = new Subtask("Понюхать хвостик","Будет вкусно пахнуть", 2, Status.NEW,
+                LocalDateTime.parse("05.02.2025 01:48", formatter), Duration.ofMinutes(30));
         taskManager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask("Постучать по арбузу","Должен глухо звучать", 2, Status.NEW);
+        Subtask subtask1 = new Subtask("Постучать по арбузу","Должен глухо звучать", 2, Status.NEW,
+                LocalDateTime.parse("05.02.2025 02:48", formatter), Duration.ofMinutes(30));
         taskManager.createSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Спросить совет продавца", "Нужно чтоб сказал ДА СПЕЛЫЙ ОН", 2, Status.NEW);
+        Subtask subtask2 = new Subtask("Спросить совет продавца", "Нужно чтоб сказал ДА СПЕЛЫЙ ОН",
+                2, Status.NEW, LocalDateTime.parse("05.02.2025 03:48", formatter), Duration.ofMinutes(30));
         taskManager.createSubtask(subtask2);
-        Epic epic1 = new Epic("Купить молоко","Нужно свежее", Status.NEW);
+        taskManager.updateSubtask(subtask2 = new Subtask("Спросить совет продавца",
+                "Нужно чтоб сказал ДА СПЕЛЫЙ ОН", 2, Status.IN_PROGRESS,
+                LocalDateTime.parse("05.02.2025 03:48", formatter), Duration.ofMinutes(30)));
+        Epic epic1 = new Epic("Купить молоко","Нужно свежее", Status.NEW, null, null);
         taskManager.createEpic(epic1);
+
 
         taskManager.getAllTasks();
         taskManager.getEpicByID(2);
