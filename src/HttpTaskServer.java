@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 public class HttpTaskServer {
     private static final int PORT = 8080;
     private static HttpServer httpServer;
-    private TaskManager taskManager;
+    private static TaskManager taskManager;
 
     public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
