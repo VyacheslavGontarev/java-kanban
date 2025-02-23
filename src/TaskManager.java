@@ -1,3 +1,4 @@
+import java.time.Duration;
 import java.util.List;
 
 public interface TaskManager {
@@ -51,5 +52,5 @@ public interface TaskManager {
 
     boolean timeValidator(Task task);
 
-    void epicEndTime(Epic epic);
+    int getId();
 }

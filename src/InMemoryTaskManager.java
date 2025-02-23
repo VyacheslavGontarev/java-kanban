@@ -6,6 +6,11 @@ import java.util.stream.Collectors;
 public class InMemoryTaskManager implements TaskManager {
 
     InMemoryHistoryManager history = Managers.getDefaultHistory();
+@Override
+    public int getId() { //TODO
+        return id;
+    }
+
     private int id = 0;
 
     private HashMap<Integer, Task> tasks = new HashMap<>();
@@ -30,7 +35,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubtask(Subtask subtask) {
+        System.out.println("Method is on");
         if (!timeValidator(subtask)) {
+            System.out.println("Thickl is on");
             subtask.setId(generateId());
             subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
@@ -43,7 +50,9 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setSubtask(sub);
             updateEpicStatus(epic);
             updateEpicStartTime(epic);
+            System.out.println(epic.getStartTime());
             updateEpicDuration(epic);
+            System.out.println(epic.getDuration());
         }
     }
 
@@ -225,36 +234,29 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicStartTime(Epic epic) {
-        ArrayList<Integer> sub = epics.get(epic.getId()).getSubtask();
-        List<Subtask> epicSubtasks = subtasks.keySet().stream()
-                .filter(key -> sub.contains(key))
+        List<Subtask> subTaskList = subtasks.keySet().stream()
+                .filter(key -> subtasks.containsKey(key))
                 .map(key -> subtasks.get(key))
                 .collect(Collectors.toList());
-        if (epicSubtasks == null) {
-            epic.setStartTime(null);
+        if (subTaskList == null) {
             return;
         }
-        int id = epic.getId();
-        LocalDateTime earliestStartTime = epicSubtasks.stream()
-                .map(subtask -> subtask.getStartTime())
+        LocalDateTime startTime = subTaskList.stream()
+                .map(subTask -> subTask.getStartTime())
                 .min(LocalDateTime::compareTo).get();
-        epic.setStartTime(earliestStartTime);
-        epicEndTime(epic);
-        epics.put(id, epic);
+        epic.setStartTime(startTime);
     }
 
     @Override
-    public void updateEpicDuration(Epic epic) {
-        ArrayList<Integer> sub = epics.get(epic.getId()).getSubtask();
-        int id = epic.getId();
-        Duration duration = subtasks.keySet().stream()
-                .filter(key -> sub.contains(key))
-                .map(key -> subtasks.get(key))
-                .map(subtask -> subtask.getDuration())
-                .reduce(Duration.ZERO, Duration::plus);
-        epic.setDuration(duration);
-        epicEndTime(epic);
-        epics.put(id, epic);
+        public void updateEpicDuration(Epic epic) {
+            Duration duration = Duration.ofMinutes(0);
+            for (int indexIdSubtask : epic.getSubtask()) {
+                Duration durationSubTask = subtasks.get(indexIdSubtask).getDuration();
+                if (durationSubTask != null) {
+                    duration = duration.plus(durationSubTask);
+                }
+            }
+            epic.setDuration(duration);
     }
 
     @Override
@@ -267,13 +269,6 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasks.stream().anyMatch(exTask ->
                 (task.getStartTime().isBefore(exTask.getEndTime()) &&
                         task.getEndTime().isAfter(exTask.getStartTime())));
-    }
-
-    @Override
-    public void epicEndTime(Epic epic) {
-        if (epic.getStartTime() != null) {
-            epic.setEndTime(epic.getStartTime().plus(epic.getDuration()));
-        }
     }
 
     public Optional<Task> findMbTask(int id) {

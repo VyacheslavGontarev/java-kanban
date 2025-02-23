@@ -10,6 +10,7 @@ public class Epic extends Task {
         super(name, description, status, startTime, duration);
         this.subtask = new ArrayList<>();
         taskType = TaskTypes.EPIC;
+        this.endTime = setEndTime();
     }
 
     public ArrayList<Integer> getSubtask() {
@@ -35,9 +36,10 @@ public class Epic extends Task {
                 '}';
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        if (startTime != null) {
-            this.endTime = endTime;
+    public LocalDateTime setEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
         }
+        return null;
     }
 }
