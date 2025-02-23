@@ -11,7 +11,7 @@ public class HttpTaskServer {
     private static HttpServer httpServer;
     private TaskManager taskManager;
 
-    public HttpTaskServer (TaskManager taskManager) {
+    public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
