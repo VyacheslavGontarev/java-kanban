@@ -52,5 +52,4 @@ public interface TaskManager {
 
     boolean timeValidator(Task task);
 
-    int getId();
 }

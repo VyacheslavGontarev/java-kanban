@@ -29,6 +29,8 @@ public class SubtaskHandlerTest {
         manager.deleteAllTasks();
         manager.deleteAllSubtasks();
         manager.deleteAllEpics();
+        epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW, null, null);
+        manager.createEpic(epic);
         taskServer.start(manager);
     }
 
@@ -39,64 +41,45 @@ public class SubtaskHandlerTest {
 
     @Test
     public void testAddSubtask() throws IOException, InterruptedException {
-        // создаём задачу
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter());
         Gson gson = gsonBuilder.create();
-
-        epic = new Epic("Купить арбуз", "Нужен самый сладкий", Status.NEW, null, null);
-        manager.createEpic(epic);
-        System.out.println(epic);
-        Subtask subtask = new Subtask("Test 2", "Testing task 2", 5,
+        Subtask subtask = new Subtask("Test 2", "Testing task 2", 0,
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
-        // конвертируем её в JSON
-       // subtask.setId(1);
-        System.out.println(subtask);
         String taskJson = gson.toJson(subtask);
-        System.out.println(taskJson);
-System.out.println(manager.getId());
-        // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/subtasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
-
-        // вызываем рест, отвечающий за создание задач
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // проверяем код ответа
-
-        System.out.println(manager.getId());
         assertEquals(201, response.statusCode());
 
         // проверяем, что создалась одна задача с корректным именем
-        List<Task> tasksFromManager = manager.getAllTasks();
-System.out.println(tasksFromManager);
+        List<Subtask> tasksFromManager = manager.getAllSubtasks();
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
         assertEquals("Test 2", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
     }
-}
 
-    /* @Test
+    @Test
     public void testUpdateSubtask() throws IOException, InterruptedException {
         // создаём задачу
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter());
         Gson gson = gsonBuilder.create();
-        Subtask subtask = new Subtask("Понюхать хвостик","Будет вкусно пахнуть", 0, Status.NEW,
+        Subtask subtask = new Subtask("Понюхать хвостик", "Будет вкусно пахнуть", 0, Status.NEW,
                 LocalDateTime.now(), Duration.ofMinutes(30));
         // конвертируем её в JSON
-        System.out.println("Breacking there?");
         manager.createSubtask(subtask);
-        System.out.println("Breacking there!");
         subtask = new Subtask("Test 1", "Testing task 1", 0,
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
+        subtask.setId(1);
         String taskJson = gson.toJson(subtask);
 
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/subtasks/0");
+        URI url = URI.create("http://localhost:8080/subtasks/1");
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
 
         // вызываем рест, отвечающий за создание задач
@@ -113,49 +96,48 @@ System.out.println(tasksFromManager);
     }
 
     @Test
-    public void testGetAllTasks() throws IOException, InterruptedException {
+    public void testGetAllSubtasks() throws IOException, InterruptedException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter());
         Gson gson = gsonBuilder.create();
-        Task task = new Task("Test 2", "Testing task 2",
+        Subtask subtask = new Subtask("Test 2", "Testing task 2", 0,
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
-        manager.createTask(task);
+        manager.createSubtask(subtask);
 
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/");
+        URI url = URI.create("http://localhost:8080/subtasks/");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        List<Task> tasksFromManager = manager.getAllTasks();
+        List<Subtask> tasksFromManager = manager.getAllSubtasks();
         assertEquals(gson.toJson(tasksFromManager), response.body(), "Не совпадает ожидаемый ответ");
     }
 
     @Test
-    public void testGetTaskById() throws IOException, InterruptedException {
+    public void testGetSubtaskById() throws IOException, InterruptedException {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter());
         Gson gson = gsonBuilder.create();
-        Task task = new Task("Test 2", "Testing task 2",
+        Subtask subtask = new Subtask("Test 2", "Testing task 2", 0,
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
-        manager.createTask(task);
-
+        manager.createSubtask(subtask);
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/0");
+        URI url = URI.create("http://localhost:8080/subtasks/1");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        Task tasksFromManager = manager.getTaskByID(0);
+        Subtask tasksFromManager = manager.getSubTaskByID(1);
         assertEquals(gson.toJson(tasksFromManager), response.body(), "Не совпадает ожидаемый ответ");
     }
 
     @Test
     public void testGetTaskByNotExistedId() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/3");
+        URI url = URI.create("http://localhost:8080/subtasks/3");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(response.statusCode(), 404, "Не корректный результат при попытке получить " +
@@ -166,7 +148,7 @@ System.out.println(tasksFromManager);
     @Test
     public void testDeleteTaskByNotExistedId() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/3");
+        URI url = URI.create("http://localhost:8080/subtasks/3");
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(response.statusCode(), 404, "Не корректный результат при попытке получить " +
@@ -180,15 +162,16 @@ System.out.println(tasksFromManager);
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .registerTypeAdapter(Duration.class, new DurationAdapter());
         Gson gson = gsonBuilder.create();
-        Task task = new Task("Test 2", "Testing task 2",
+        Subtask subtask = new Subtask("Test 2", "Testing task 2", 0,
                 Status.NEW, LocalDateTime.now(), Duration.ofMinutes(5));
-        manager.createTask(task);
+        manager.createSubtask(subtask);
 
         // создаём HTTP-клиент и запрос
         HttpClient client = HttpClient.newHttpClient();
-        URI url = URI.create("http://localhost:8080/tasks/0");
+        URI url = URI.create("http://localhost:8080/subtasks/1");
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(response.statusCode(), 200, "Не корректный результат при попытке удалить задачу");
-        assertEquals("Task deleted", response.body(), "Не совпадает ожидаемый ответ");
-    }*/
+        assertEquals("Subtask deleted", response.body(), "Не совпадает ожидаемый ответ");
+    }
+}

@@ -76,7 +76,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendHasInteractions(exchange);
             }
         } catch (Exception e) {
-            exchange.sendResponseHeaders(409, 0);
+            exchange.sendResponseHeaders(400, 0);
             sendText(exchange, "Invalid request body");
         }
     }
