@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 public class InMemoryTaskManager implements TaskManager {
 
     InMemoryHistoryManager history = Managers.getDefaultHistory();
-
     private int id = 0;
-
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
