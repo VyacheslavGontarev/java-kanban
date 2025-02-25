@@ -49,5 +49,5 @@ public interface TaskManager {
 
     List<Task> getPrioritizedTasks();
 
-    boolean timeValidator(Task task);
+    boolean validateTime(Task task);
 }

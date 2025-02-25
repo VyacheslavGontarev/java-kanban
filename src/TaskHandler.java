@@ -68,7 +68,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         }
         try {
             Task task = gson.fromJson(requestBody, Task.class);
-            if (!taskManager.timeValidator(task)) {
+            if (!taskManager.validateTime(task)) {
                 taskManager.createTask(task);
                 exchange.sendResponseHeaders(201, 0);
                 sendText(exchange, "Creation request sent");

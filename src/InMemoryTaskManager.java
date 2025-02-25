@@ -14,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
-        if (!timeValidator(task)) {
+        if (!validateTime(task)) {
             task.setId(generateId());
             tasks.put(task.getId(), task);
             prioritizedTasks.add(task);
@@ -29,7 +29,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createSubtask(Subtask subtask) {
-        if (subtask != null && !timeValidator(subtask)) {
+        if (subtask != null && !validateTime(subtask)) {
             subtask.setId(generateId());
             subtasks.put(subtask.getId(), subtask);
 
@@ -119,7 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        if (timeValidator(task)) {
+        if (validateTime(task)) {
             tasks.put(task.getId(), task);
             prioritizedTasks.remove(task);
             prioritizedTasks.add(task);
@@ -244,7 +244,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public boolean timeValidator(Task task) {
+    public boolean validateTime(Task task) {
         return prioritizedTasks.stream().anyMatch(exTask ->
                 (task.getStartTime().isBefore(exTask.getEndTime()) &&
                         task.getEndTime().isAfter(exTask.getStartTime())));

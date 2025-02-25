@@ -68,7 +68,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         }
         try {
             Subtask subtask = gson.fromJson(requestBody, Subtask.class);
-            if (!taskManager.timeValidator(subtask)) {
+            if (!taskManager.validateTime(subtask)) {
                 taskManager.createSubtask(subtask);
                 exchange.sendResponseHeaders(201, 0);
                 sendText(exchange, "Creation request sent");
