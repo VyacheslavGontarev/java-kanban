@@ -32,7 +32,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 }
             case "DELETE":
                 if (pathParts.length == 3) {
-                    delOneSubtask(exchange, pathParts[2]);
+                    deleteSubtask(exchange, pathParts[2]);
                     break;
                 } else {
                     exchange.sendResponseHeaders(400, 0);
@@ -101,7 +101,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     }
 
 
-    private void delOneSubtask(HttpExchange exchange, String taskId) throws IOException {
+    private void deleteSubtask(HttpExchange exchange, String taskId) throws IOException {
         try {
             Subtask subtask = taskManager.getSubTaskByID(Integer.parseInt(taskId));
             taskManager.delOneSubtask(Integer.parseInt(taskId));

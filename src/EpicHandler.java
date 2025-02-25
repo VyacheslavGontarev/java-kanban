@@ -30,7 +30,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                     break;
             case "DELETE":
                 if (pathParts.length == 3) {
-                    delOneEpic(exchange, pathParts[2]);
+                    deleteEpic(exchange, pathParts[2]);
                     break;
                 } else {
                     exchange.sendResponseHeaders(400, 0);
@@ -75,7 +75,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private void delOneEpic(HttpExchange exchange, String taskId) throws IOException {
+    private void deleteEpic(HttpExchange exchange, String taskId) throws IOException {
         try {
             Epic epic = taskManager.getEpicByID(Integer.parseInt(taskId));
             taskManager.delOneEpic(Integer.parseInt(taskId));
