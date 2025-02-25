@@ -49,7 +49,5 @@ public interface TaskManager {
 
     List<Task> getPrioritizedTasks();
 
-    boolean timeValidator(Task task);
-
-    void epicEndTime(Epic epic);
+    boolean validateTime(Task task);
 }
